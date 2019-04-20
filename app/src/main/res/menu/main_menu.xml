@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_item_github"
+        android:icon="@drawable/ic_github_logo"
+        android:title="@string/see_code"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_item_help"
+        android:icon="@drawable/ic_help_outline_24dp"
+        android:title="@string/help"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_item_list"
+        android:icon="@drawable/ic_ordered_list_24dp"
+        android:title="@string/see_the_log"
+        app:showAsAction="ifRoom"/>
+
+</menu>

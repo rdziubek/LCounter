@@ -78,7 +78,7 @@ public class Logs extends AppCompatActivity {
 
         if (id == R.id.menu_item_github) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://www.github.com/witampanstwa/"));
+                    Uri.parse("https://github.com/witampanstwa/LCounter/"));
             startActivity(browserIntent);
             return true;
         }

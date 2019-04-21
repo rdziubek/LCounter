@@ -1,4 +1,4 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("pl.witampanstwa_.lcounter", appContext.getPackageName());
+        assertEquals("pl.witampanstwa.lcounter", appContext.getPackageName());
     }
 }

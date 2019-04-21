@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="pl.witampanstwa_.lcounter">
+    package="pl.witampanstwa.lcounter">
 
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
@@ -18,7 +18,7 @@
         android:versionCode="2"
         android:versionName="Second">
         <activity
-            android:name=".SplashActivity"
+            android:name="pl.witampanstwa.lcounter.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -30,11 +30,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="pl.witampanstwa.lcounter.MainActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".Logs"
+            android:name="pl.witampanstwa.lcounter.Logs"
             android:screenOrientation="portrait" />
     </application>
 

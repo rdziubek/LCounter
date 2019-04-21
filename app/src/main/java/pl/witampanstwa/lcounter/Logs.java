@@ -1,4 +1,4 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -51,7 +51,7 @@ public class Logs extends AppCompatActivity {
 
         //init sharedprefs
         timeAndCountPrefs = this.getSharedPreferences(
-                "pl.witampanstwa_.lcounter", Context.MODE_PRIVATE);
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
 
         initRecycler();
 

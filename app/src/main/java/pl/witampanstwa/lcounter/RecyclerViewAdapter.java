@@ -1,7 +1,6 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;

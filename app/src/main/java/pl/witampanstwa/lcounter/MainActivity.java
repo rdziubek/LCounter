@@ -1,4 +1,4 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 //import android.util.Log;
 import android.view.LayoutInflater;
@@ -187,9 +186,9 @@ public class MainActivity extends AppCompatActivity {
 
         //init sharedprefs
         timeAndCountPrefs = this.getSharedPreferences(
-                "pl.witampanstwa_.lcounter", Context.MODE_PRIVATE);
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
         settingsPrefs = this.getSharedPreferences(
-                "pl.witampanstwa_.lcounter", Context.MODE_PRIVATE);
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
 
         //restore settings
         helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);

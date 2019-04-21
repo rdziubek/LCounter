@@ -1,4 +1,4 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import android.content.Intent;
 import android.os.Bundle;

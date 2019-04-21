@@ -1,4 +1,4 @@
-package pl.witampanstwa_.lcounter;
+package pl.witampanstwa.lcounter;
 
 import org.junit.Test;
 

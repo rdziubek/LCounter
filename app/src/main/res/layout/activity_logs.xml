@@ -15,12 +15,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <pl.witampanstwa.lcounter.AutoResizeTextView
         android:id="@+id/twNoLogs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_log"
         android:textColor="@android:color/white"
+        android:maxLines="1"
         android:textSize="24sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

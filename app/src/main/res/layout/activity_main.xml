@@ -7,11 +7,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <pl.witampanstwa.lcounter.AutoResizeTextView
         android:id="@+id/twCount"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:background="@android:color/transparent"
         android:gravity="center"
+        android:longClickable="true"
+        android:textSize="2000sp"
+        android:maxLines="1"
         android:onClick="count"
         android:text="@string/text_count"
         android:textColor="@android:color/white"

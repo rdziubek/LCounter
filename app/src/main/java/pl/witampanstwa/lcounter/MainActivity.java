@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 //import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private TextView twCount;
+    private ConstraintLayout clMain;
     private String alDateHelper, alHourHelper;
     private boolean helpDialogShown = false;
     //    String TAG = "lcounterapr20";
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                twCount.setBackgroundColor((int) animator.getAnimatedValue());
+                clMain.setBackgroundColor((int) animator.getAnimatedValue());
             }
         });
         colorAnimation.start();
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onAnimationUpdate(ValueAnimator animator) {
-                    twCount.setBackgroundColor((int) animator.getAnimatedValue());
+                    clMain.setBackgroundColor((int) animator.getAnimatedValue());
                 }
             });
             colorAnimation.start();
@@ -176,9 +178,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        clMain = findViewById(R.id.clMain);
         twCount = findViewById(R.id.twCount);
 
         twCount.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                delLastCount();
+                return true;
+            }
+        });
+
+        clMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 delLastCount();
@@ -202,6 +213,15 @@ public class MainActivity extends AppCompatActivity {
         counterValue = timeAndCountPrefs.getInt("counterValue", 0);
 
         twCount.setText(Integer.toString(counterValue));
+
+        twCount.post(new Runnable() {   //has to be executed after the layout is fully loaded, since it uses the view's size.
+            @Override
+            public void run() {
+                //refresh the view to allow it to auto resize
+                twCount.setText("");
+                twCount.setText(Integer.toString(counterValue));
+            }
+        });
 
         //note: it is unnecessary to restore arrays from sharedprefs in MainActivity, since only count (form sharedprefs) is displayed here; new items for the both arrays are assigned DIRECTLY into shared prefs (in a form of "|" separated string), not via an ArrayList.
         /*        //restore arrays (strings)

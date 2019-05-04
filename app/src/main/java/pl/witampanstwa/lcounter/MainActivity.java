@@ -30,11 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences timeAndCountPrefs;
     private SharedPreferences settingsPrefs;
-    //    boolean recreateMain = false;
     private int counterValue = 0;
 
     private String getDateTime() {
-        // TODO: replace all this with date based on locale (e.g. the day string has to be written in local language)
         return new SimpleDateFormat("EEE, MMM d, ''yy").format(new Date());
     }
 
@@ -62,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
                 .apply();
     }
 
-    public void count(View view) {   //defines actions performed after a touch on MainActivity (not the toolbar)
-
+    public void count(View view) {   //defines actions performed after a touch on textview R.id.twCount is detected
         int colorFrom = getResources().getColor(R.color.colorWhite);
         int colorTo = getResources().getColor(R.color.colorPrimary);
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        ValueAnimator colorAnimation =
+                ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.setDuration(800);
-        colorAnimation.setInterpolator(new DecelerateInterpolator(4));
+        colorAnimation.setInterpolator(new DecelerateInterpolator(3));
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
             @Override
@@ -115,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
     private void delLastCount() {
         if (counterValue > 0) {
             counterValue--;
-            twCount.setText(String.valueOf(counterValue));
 
             int colorFrom = getResources().getColor(R.color.colorLivingCoral);
             int colorTo = getResources().getColor(R.color.colorPrimary);
@@ -131,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             colorAnimation.start();
+
+            twCount.setText(String.valueOf(counterValue));
 
             saveCounter();
 
@@ -159,7 +158,10 @@ public class MainActivity extends AppCompatActivity {
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(inflater.inflate(R.layout.help_dialog, null))
                 .setTitle("Hint")
-                .setNegativeButton("dismiss", null).show().getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.colorStrongAccent));
+                .setNegativeButton("dismiss", null)
+                .show()
+                .getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(getResources().getColor(R.color.colorLivingCoral));
         builder.create();
         helpDialogShown = true;
         //save the dialog state

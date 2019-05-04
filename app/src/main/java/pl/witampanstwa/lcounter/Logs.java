@@ -30,8 +30,15 @@ public class Logs extends AppCompatActivity {
 
     private void initRecycler() {
         //restore arrays (strings)
-        alDate = new ArrayList<>(Arrays.asList(timeAndCountPrefs.getString("alDate", "").split("-")));  //note: will NOT produce null.
-        alHour = new ArrayList<>(Arrays.asList(timeAndCountPrefs.getString("alHour", "").split("-")));
+        alDate = new ArrayList<>(Arrays
+                .asList(timeAndCountPrefs
+                        .getString("alDate", "")
+                        .split("-")));    //note: will NOT produce null.
+
+        alHour = new ArrayList<>(Arrays
+                .asList(timeAndCountPrefs
+                        .getString("alHour", "")
+                        .split("-")));    //note: will NOT produce null.
 
         initRecyclerView();
     }
@@ -57,8 +64,8 @@ public class Logs extends AppCompatActivity {
 
         // If logs are blank:
         if(alDate.get(0).equals("")) {
-            findViewById(R.id.rvLogs).setVisibility(View.INVISIBLE);
-            findViewById(R.id.twLogs).setVisibility(View.VISIBLE);
+            findViewById(R.id.rvLogs).setVisibility(View.GONE);
+            findViewById(R.id.twNoLogs).setVisibility(View.VISIBLE);
         }
 
 //        Log.d(TAG, "delLastCount: On LOGS date: "+timeAndCountPrefs.getString("alDate", ""));

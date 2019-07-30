@@ -25,118 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView twCount;
     private ConstraintLayout clMain;
-    private String alDateHelper, alHourHelper;
+
+    private int counterValue = 0;
     private boolean helpDialogShown = false;
 
     private SharedPreferences timeAndCountPrefs;
     private SharedPreferences settingsPrefs;
-    private int counterValue = 0;
-
-    private String getDateTime() {
-        return new SimpleDateFormat("EEE, MMM d, ''yy").format(new Date());
-    }
-
-    private String getHourTime() {
-        //TODO: change 24-hrs to 12-hrs system based on locale
-        return new SimpleDateFormat("HH:mm:ss").format(new Date());
-    }
-
-    private void saveCounter() {
-        timeAndCountPrefs
-                .edit()
-                .putInt("counterValue", counterValue)
-                .apply();
-    }
-
-    private void saveArrays() {
-        timeAndCountPrefs
-                .edit()
-                .putString("alDate", alDateHelper)
-                .apply();
-
-        timeAndCountPrefs
-                .edit()
-                .putString("alHour", alHourHelper)
-                .apply();
-    }
-
-    private void animateBack(int colorFrom, int colorTo, int duration){
-        ValueAnimator colorAnimation =
-                ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(duration);
-        colorAnimation.setInterpolator(new DecelerateInterpolator(3));
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                clMain.setBackgroundColor((int) animator.getAnimatedValue());
-            }
-        });
-        colorAnimation.start();
-    }
-
-    public void count(View view) {   //R.id.twCount onClick
-        animateBack(
-                getResources().getColor(R.color.colorWhite),
-                getResources().getColor(R.color.colorPrimary),
-        800);
-
-        counterValue++;
-        twCount.setText(String.valueOf(counterValue));
-        saveCounter();
-
-        //modify arrays
-        //Add values to arrays (directly, to the arrays saved as "|" separated stings in sharedprefs).
-        alDateHelper = timeAndCountPrefs.getString("alDate", "");       //update values (take them out of sharedpreferences)
-        alHourHelper = timeAndCountPrefs.getString("alHour", "");
-
-        //date
-        alDateHelper = getDateTime() + (alDateHelper.equals("") ? "" : "-") + alDateHelper;
-        alHourHelper = getHourTime() + (alHourHelper.equals("") ? "" : "-") + alHourHelper;
-        saveArrays();
-    }
-
-    //TODO: implement deleting entries located between of other ones (that is dependent on the passed in delimiter parameter).
-    private String deleteCharsBetweenDelimiters(String str, int startDelimiterIndex) {  //called only if counterVal > 0.
-        //find the chars range
-        int i = 0, charEnd = str.length() - 1;
-//        int charStart = 0, currDelimiterIndex = 0;       //charEnd is initialized to str length to handle the situation where there is no delimiter found (e.g. when there is only one entry saved) (and the " - 1", because of the missing delimiter).
-
-        if (counterValue + 1 < 2)
-            return "";
-        else
-            while (str.charAt(i) != '-') {
-                charEnd = i;
-                i++;
-            }
-        return str.substring(charEnd + 2);  // +1 because i starts with 0, and another +1 to exclude the delimiter
-    }
-
-    private void delLastCount() {
-        if (counterValue > 0) {
-            counterValue--;
-
-            animateBack(
-                    getResources().getColor(R.color.colorLivingCoral),
-                    getResources().getColor(R.color.colorPrimary),
-                    2500);
-
-            twCount.setText(String.valueOf(counterValue));
-
-            saveCounter();
-
-            //modify arrays (directly, those saved as "|" separated stings in sharedprefs).
-            alDateHelper = timeAndCountPrefs.getString("alDate", "");       //update values (take them out of sharedpreferences)
-            alHourHelper = timeAndCountPrefs.getString("alHour", "");
-
-            //remove all chars before the first delimiter (beginning form the start; with delimiter inclusive).
-            alHourHelper = deleteCharsBetweenDelimiters(alHourHelper, 0);   //note: alHourHelper will NOT be null.
-            alDateHelper = deleteCharsBetweenDelimiters(alDateHelper, 0);
-
-            //put back modified strings to the shared prefs
-            saveArrays();
-        }
-    }
 
     private void showHelpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -159,6 +53,126 @@ public class MainActivity extends AppCompatActivity {
                 .apply();
     }
 
+    private void animateBack(int colorFrom, int colorTo, int duration) {
+        ValueAnimator colorAnimation =
+                ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(duration);
+        colorAnimation.setInterpolator(new DecelerateInterpolator(3));
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                clMain.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+        });
+        colorAnimation.start();
+    }
+
+    private String getDateTime() {
+        return new SimpleDateFormat("EEE, MMM d, ''yy").format(new Date());
+    }
+
+    private String getHourTime() {
+        //TODO: change 24-hrs to 12-hrs system based on locale
+        return new SimpleDateFormat("HH:mm:ss").format(new Date());
+    }
+
+    private void saveCounter() {
+        timeAndCountPrefs
+                .edit()
+                .putInt("counterValue", counterValue)
+                .apply();
+    }
+
+    private void appendDateToPrefs(String text) {
+        timeAndCountPrefs
+                .edit()
+                .putString("alDate", getDateFromPreferences()
+                        + (getDateFromPreferences().equals("") ? "" : ",_,")
+                        + text)
+                .apply();
+    }
+
+    private void appendHourToPrefs(String text) {
+        timeAndCountPrefs
+                .edit()
+                .putString("alHour", getHourFromPreferences()
+                        + (getHourFromPreferences().equals("") ? "" : ",_,")
+                        + text)
+                .apply();
+    }
+
+    public void count(View view) {   //R.id.twCount onClick
+        animateBack(
+                getResources().getColor(R.color.colorWhite),
+                getResources().getColor(R.color.colorPrimary),
+                800);
+
+        counterValue++;
+        twCount.setText(String.valueOf(counterValue));
+        saveCounter();
+
+        // save next entry
+        appendDateToPrefs(getDateTime());
+        appendHourToPrefs(getHourTime());
+    }
+
+    //TODO: implement deleting entries located between of other ones (that is dependent on the passed in delimiter parameter).
+    private String deleteCharsBetweenDelimiters(String str, int startDelimiterIndex) {  //called only if counterVal > 0.
+        //find the chars range
+        int i = 0, charEnd = str.length() - 1;
+//        int charStart = 0, currDelimiterIndex = 0;       //charEnd is initialized to str length to handle the situation where there is no delimiter found (e.g. when there is only one entry saved) (and the " - 1", because of the missing delimiter).
+
+        if (counterValue + 1 < 2)
+            return "";
+        else
+            while (str.charAt(i) != '-') {
+                charEnd = i;
+                i++;
+            }
+        return str.substring(charEnd + 2);  // +1 because i starts with 0, and another +1 to exclude the delimiter
+    }
+
+    private String getDateFromPreferences() {
+        return timeAndCountPrefs
+                .getString("alDate", "");
+    }
+
+    private String getHourFromPreferences() {
+        return timeAndCountPrefs
+                .getString("alHour", "");
+    }
+
+    private void removeLastEntry() {    // the only modified thing here is the counter, as the actual entry's data (date and hour, specifically) is removed as soon as Logs activity is run
+        if (counterValue > 0) {
+            counterValue--;
+
+            twCount.setText(String.valueOf(counterValue));
+
+            // save modified data
+            saveCounter();
+        }
+
+        animateBack(
+                getResources().getColor(R.color.colorLivingCoral),
+                getResources().getColor(R.color.colorPrimary),
+                2500);
+    }
+
+    private void initialiseData(){
+        //init sharedprefs
+        timeAndCountPrefs = this.getSharedPreferences(
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
+        settingsPrefs = this.getSharedPreferences(
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
+
+        //restore settings
+        helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);
+
+        //restore counter value
+        counterValue = timeAndCountPrefs.getInt("counterValue", 0);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -171,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         twCount.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                delLastCount();
+                removeLastEntry();
                 return true;
             }
         });
@@ -179,25 +193,15 @@ public class MainActivity extends AppCompatActivity {
         clMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                delLastCount();
+                removeLastEntry();
                 return true;
             }
         });
 
-        //init sharedprefs
-        timeAndCountPrefs = this.getSharedPreferences(
-                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
-        settingsPrefs = this.getSharedPreferences(
-                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
-
-        //restore settings
-        helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);
+        initialiseData();
 
         if (!helpDialogShown)
             showHelpDialog();
-
-        //restore counter value
-        counterValue = timeAndCountPrefs.getInt("counterValue", 0);
 
         twCount.setText(Integer.toString(counterValue));
 

@@ -22,49 +22,88 @@ import java.util.Arrays;
 
 public class Logs extends AppCompatActivity {
 
-    private SharedPreferences timeAndCountPrefs;
+    private boolean isRunForTheFirstTime = false;
+    private int counterValue;
     private ArrayList<String> alDate;
     private ArrayList<String> alHour;
 
-    private void initRecycler() {
-        //restore arrays (strings)
-        alDate = new ArrayList<>(Arrays
-                .asList(timeAndCountPrefs
-                        .getString("alDate", "")
-                        .split("-")));    // will NOT produce null.
+    private SharedPreferences timeAndCountPrefs;
 
-        alHour = new ArrayList<>(Arrays
-                .asList(timeAndCountPrefs
-                        .getString("alHour", "")
-                        .split("-")));    // will NOT produce null.
-
-        initRecyclerView();
-    }
+    private RecyclerView rvLogs;
+    private RecyclerViewAdapter rvAdapter;
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.rvLogs);
-        RecyclerViewAdapter rvAdapter = new RecyclerViewAdapter(alDate, alHour);
-        recyclerView.setAdapter(rvAdapter);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        rvLogs.setLayoutManager(mLayoutManager);
+        mLayoutManager.setReverseLayout(true);
+        mLayoutManager.setStackFromEnd(true);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        rvAdapter = new RecyclerViewAdapter(alDate, alHour);
+        rvLogs.setAdapter(rvAdapter);
     }
 
-    @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        setContentView(R.layout.activity_logs);
+    private String getDateFromPreferences() {
+        return timeAndCountPrefs
+                .getString("alDate", "");
+    }
 
+    private String getHourFromPreferences() {
+        return timeAndCountPrefs
+                .getString("alHour", "");
+    }
+
+    private void initialiseData() {
         //init sharedprefs
         timeAndCountPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
 
-        initRecycler();
+        // initialise AND restore the arrays data
+        alDate = new ArrayList<>(Arrays
+                .asList(getDateFromPreferences()
+                        .split(",_,")));    // will NOT produce null.
 
-        // If logs are blank:
-        if(alDate.get(0).equals("")) {
+        alHour = new ArrayList<>(Arrays
+                .asList(getHourFromPreferences()
+                        .split(",_,")));    // will NOT produce null.
+
+        counterValue = timeAndCountPrefs.getInt("counterValue", 0);
+
+        // indicate that the app is run for the first time by either checking the date or hour array.
+        if (alHour.get(0).equals(""))
+            isRunForTheFirstTime = true;
+
+        // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences (if such was to return null, a "null" string would then get appended to SharedPrefs (and a much more resource heavy solution would be needed)).
+        if (isRunForTheFirstTime) {
+            alDate.clear();
+            alHour.clear();
+        }
+    }
+
+    private void trimEntries(){
+        if(counterValue != alDate.size())   // doesnt matter whether alDate or alHour is checked as their sizes are always equal
+            while (counterValue < alDate.size()){
+                alDate.remove(alDate.size() - 1);
+                alHour.remove(alDate.size() - 1);
+            }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_logs);
+
+        rvLogs = findViewById(R.id.rvLogs);
+
+        initialiseData();
+        trimEntries();
+
+        // If logs are blank
+        if (isRunForTheFirstTime) {
             findViewById(R.id.rvLogs).setVisibility(View.GONE);
             findViewById(R.id.twNoLogs).setVisibility(View.VISIBLE);
         }
+
+        initRecyclerView();
     }
 
     @Override

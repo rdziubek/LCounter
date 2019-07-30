@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -61,12 +60,10 @@ public class MainActivity extends AppCompatActivity {
                 .apply();
     }
 
-    public void count(View view) {   //defines actions performed after a touch on textview R.id.twCount is detected
-        int colorFrom = getResources().getColor(R.color.colorWhite);
-        int colorTo = getResources().getColor(R.color.colorPrimary);
+    private void animateBack(int colorFrom, int colorTo, int duration){
         ValueAnimator colorAnimation =
                 ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(800);
+        colorAnimation.setDuration(duration);
         colorAnimation.setInterpolator(new DecelerateInterpolator(3));
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -76,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         colorAnimation.start();
+    }
+
+    public void count(View view) {   //R.id.twCount onClick
+        animateBack(
+                getResources().getColor(R.color.colorWhite),
+                getResources().getColor(R.color.colorPrimary),
+        800);
 
         counterValue++;
         twCount.setText(String.valueOf(counterValue));
@@ -90,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
         alDateHelper = getDateTime() + (alDateHelper.equals("") ? "" : "-") + alDateHelper;
         alHourHelper = getHourTime() + (alHourHelper.equals("") ? "" : "-") + alHourHelper;
         saveArrays();
-
-//        Log.d(TAG, "delLastCount: On COUNT date: " + timeAndCountPrefs.getString("alDate", ""));
-//        Log.d(TAG, "delLastCount: On COUNT hour: " + timeAndCountPrefs.getString("alHour", ""));
     }
 
     //TODO: implement deleting entries located between of other ones (that is dependent on the passed in delimiter parameter).
@@ -115,20 +116,10 @@ public class MainActivity extends AppCompatActivity {
         if (counterValue > 0) {
             counterValue--;
 
-            int colorFrom = getResources().getColor(R.color.colorLivingCoral);
-            int colorTo = getResources().getColor(R.color.colorPrimary);
-            ValueAnimator colorAnimation =
-                    ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-            colorAnimation.setDuration(2500);
-            colorAnimation.setInterpolator(new DecelerateInterpolator(3));
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                    clMain.setBackgroundColor((int) animator.getAnimatedValue());
-                }
-            });
-            colorAnimation.start();
+            animateBack(
+                    getResources().getColor(R.color.colorLivingCoral),
+                    getResources().getColor(R.color.colorPrimary),
+                    2500);
 
             twCount.setText(String.valueOf(counterValue));
 
@@ -144,9 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
             //put back modified strings to the shared prefs
             saveArrays();
-
-//            Log.d(TAG, "delLastCount: On DEL date: " + timeAndCountPrefs.getString("alDate", ""));
-//            Log.d(TAG, "delLastCount: On DEL hour: " + timeAndCountPrefs.getString("alHour", ""));
         }
     }
 
@@ -227,9 +215,6 @@ public class MainActivity extends AppCompatActivity {
          **        alDate = new ArrayList<>(Arrays.asList(TextUtils.split(timeAndCountPrefs.getString("alDate", ""), "|")));
          **        alHour = new ArrayList<>(Arrays.asList(TextUtils.split(timeAndCountPrefs.getString("alHour", ""), "|")));
          */
-
-//        Log.d(TAG, "delLastCount: On CREATE date: " + timeAndCountPrefs.getString("alDate", ""));
-//        Log.d(TAG, "delLastCount: On CREATE hour: " + timeAndCountPrefs.getString("alHour", ""));
     }
 
     @Override

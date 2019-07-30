@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-//import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,19 +25,18 @@ public class Logs extends AppCompatActivity {
     private SharedPreferences timeAndCountPrefs;
     private ArrayList<String> alDate;
     private ArrayList<String> alHour;
-//    String TAG = "lcounterapr20";
 
     private void initRecycler() {
         //restore arrays (strings)
         alDate = new ArrayList<>(Arrays
                 .asList(timeAndCountPrefs
                         .getString("alDate", "")
-                        .split("-")));    //note: will NOT produce null.
+                        .split("-")));    // will NOT produce null.
 
         alHour = new ArrayList<>(Arrays
                 .asList(timeAndCountPrefs
                         .getString("alHour", "")
-                        .split("-")));    //note: will NOT produce null.
+                        .split("-")));    // will NOT produce null.
 
         initRecyclerView();
     }
@@ -67,9 +65,6 @@ public class Logs extends AppCompatActivity {
             findViewById(R.id.rvLogs).setVisibility(View.GONE);
             findViewById(R.id.twNoLogs).setVisibility(View.VISIBLE);
         }
-
-//        Log.d(TAG, "delLastCount: On LOGS date: "+timeAndCountPrefs.getString("alDate", ""));
-//        Log.d(TAG, "delLastCount: On LOGS hour: "+timeAndCountPrefs.getString("alHour", ""));
     }
 
     @Override

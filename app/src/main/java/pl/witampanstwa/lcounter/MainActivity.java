@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout clMain;
     private String alDateHelper, alHourHelper;
     private boolean helpDialogShown = false;
-    //    String TAG = "lcounterapr20";
 
     private SharedPreferences timeAndCountPrefs;
     private SharedPreferences settingsPrefs;
@@ -159,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(inflater.inflate(R.layout.help_dialog, null))
-                .setTitle("Hint")
                 .setNegativeButton("dismiss", null)
                 .show()
                 .getButton(AlertDialog.BUTTON_NEGATIVE)
@@ -175,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

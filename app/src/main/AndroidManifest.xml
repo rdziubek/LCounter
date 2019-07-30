@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="pl.witampanstwa.lcounter.SplashActivity"
+            android:name="pl.witampanstwa.lcounter.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -27,9 +27,6 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="pl.witampanstwa.lcounter.MainActivity"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name="pl.witampanstwa.lcounter.Logs"

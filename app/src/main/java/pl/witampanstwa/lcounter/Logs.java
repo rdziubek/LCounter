@@ -27,7 +27,7 @@ public class Logs extends AppCompatActivity {
     private ArrayList<String> alDate;
     private ArrayList<String> alHour;
 
-    private SharedPreferences timeAndCountPrefs;
+    private SharedPreferences counterDataPrefs;
 
     private RecyclerView rvLogs;
     private RecyclerViewAdapter rvAdapter;
@@ -43,18 +43,18 @@ public class Logs extends AppCompatActivity {
     }
 
     private String getDateFromPreferences() {
-        return timeAndCountPrefs
+        return counterDataPrefs
                 .getString("alDate", "");
     }
 
     private String getHourFromPreferences() {
-        return timeAndCountPrefs
+        return counterDataPrefs
                 .getString("alHour", "");
     }
 
     private void initialiseData() {
         //init sharedprefs
-        timeAndCountPrefs = this.getSharedPreferences(
+        counterDataPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
 
         // load (restore) the counter history data--can be restored in real-time as it provides the main functionality for this activity
@@ -65,7 +65,7 @@ public class Logs extends AppCompatActivity {
                 .asList(getHourFromPreferences()
                         .split(",_,")));    // will NOT produce null.
 
-        counterValue = timeAndCountPrefs.getInt("counterValue", 0);
+        counterValue = counterDataPrefs.getInt("counterValue", 0);
 
         // app-run-first-time indicator
         if (counterValue == 0)
@@ -82,21 +82,21 @@ public class Logs extends AppCompatActivity {
         return android.text.TextUtils.join(",_,", al);
     }
 
-    private void updateTimeAndCountDataInSharedPrefs() {
+    private void updateCounterDataInSharedPrefs() {
         //counter
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putInt("counterValue", counterValue)
                 .apply();
 
         //date
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putString("alDate", arrayListAsString(alDate))
                 .apply();
 
         //hour
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putString("alHour", arrayListAsString(alHour))
                 .apply();

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> alDate;
     private ArrayList<String> alHour;
 
-    private SharedPreferences timeAndCountPrefs;
+    private SharedPreferences counterDataPrefs;
     private SharedPreferences settingsPrefs;
 
     private void showHelpDialog() {
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("dismiss", null)
                 .show()
                 .getButton(AlertDialog.BUTTON_NEGATIVE)
-                .setTextColor(getResources().getColor(R.color.colorLivingCoral));
+                .setTextColor(ContextCompat.getColor(this, R.color.colorLivingCoral));
         builder.create();
         helpDialogShown = true;
         //save the dialog state
@@ -86,21 +87,21 @@ public class MainActivity extends AppCompatActivity {
         return android.text.TextUtils.join(",_,", al);
     }
 
-    private void updateTimeAndCountDataInSharedPrefs() {
+    private void updateCounterDataInSharedPrefs() {
         //counter
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putInt("counterValue", counterValue)
                 .apply();
 
         //date
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putString("alDate", arrayListAsString(alDate))
                 .apply();
 
         //hour
-        timeAndCountPrefs
+        counterDataPrefs
                 .edit()
                 .putString("alHour", arrayListAsString(alHour))
                 .apply();
@@ -108,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void count(View view) {   //R.id.twCount onClick
         animateBack(
-                getResources().getColor(R.color.colorWhite),
-                getResources().getColor(R.color.colorPrimary),
+                ContextCompat.getColor(this, R.color.colorWhite),
+                ContextCompat.getColor(this, R.color.colorPrimary),
                 800);
 
         //update the data
@@ -119,41 +120,41 @@ public class MainActivity extends AppCompatActivity {
         alHour.add(getHourTime());
 
         //save the updated data permanently
-        updateTimeAndCountDataInSharedPrefs();
+        updateCounterDataInSharedPrefs();
     }
 
     // TODO: Convert this into "removeEntryAtIndex(int i)".
     private void removeLastEntry() {
+        animateBack(
+                ContextCompat.getColor(this, R.color.colorLivingCoral),
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                2500);
+
         if (counterValue > 0) {
             //update the data
             counterValue--;
             twCount.setText(String.valueOf(counterValue));
             alDate.remove(alDate.size() - 1);
             alHour.remove(alHour.size() - 1);
+
+            //save the updated data permanently
+            updateCounterDataInSharedPrefs();
         }
-
-        animateBack(
-                getResources().getColor(R.color.colorLivingCoral),
-                getResources().getColor(R.color.colorPrimary),
-                2500);
-
-        //save the updated data permanently
-        updateTimeAndCountDataInSharedPrefs();
     }
 
     private String getDateFromPreferences() {
-        return timeAndCountPrefs
+        return counterDataPrefs
                 .getString("alDate", "");
     }
 
     private String getHourFromPreferences() {
-        return timeAndCountPrefs
+        return counterDataPrefs
                 .getString("alHour", "");
     }
 
     private void initialiseData() {
         //init sharedprefs
-        timeAndCountPrefs = this.getSharedPreferences(
+        counterDataPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
         settingsPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);
 
         //restore counter value
-        counterValue = timeAndCountPrefs.getInt("counterValue", 0);
+        counterValue = counterDataPrefs.getInt("counterValue", 0);
     }
 
     @Override

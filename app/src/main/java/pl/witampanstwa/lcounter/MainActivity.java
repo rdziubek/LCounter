@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView twCount;
     private ConstraintLayout clMain;
 
-    private boolean isRunForTheFirstTime = false;
     private int counterValue = 0;
     private boolean helpDialogShown = false;
     private ArrayList<String> alDate;
@@ -213,12 +212,8 @@ public class MainActivity extends AppCompatActivity {
                         .asList(getHourFromPreferences()
                                 .split(",_,")));    // will NOT produce null.
 
-                // app-run-first-time indicator
-                if (counterValue == 0)
-                    isRunForTheFirstTime = true;
-
-                // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
-                if (isRunForTheFirstTime) {
+                // when nothing found in sharedPrefs both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
+                if(alDate.get(0).equals("") || alHour.get(0).equals("")) {
                     alDate.clear();
                     alHour.clear();
                 }

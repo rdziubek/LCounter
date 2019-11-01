@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 public class Logs extends AppCompatActivity {
 
-    private boolean isRunForTheFirstTime = false;
+    private boolean wereLogsEmpty = false;
     private int counterValue;
     private ArrayList<String> alDate;
     private ArrayList<String> alHour;
@@ -67,12 +67,11 @@ public class Logs extends AppCompatActivity {
 
         counterValue = counterDataPrefs.getInt("counterValue", 0);
 
-        // app-run-first-time indicator
-        if (counterValue == 0)
-            isRunForTheFirstTime = true;
+        if(alDate.get(0).equals("") || alHour.get(0).equals(""))
+            wereLogsEmpty = true;
 
-        // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
-        if (isRunForTheFirstTime) {
+        // when nothing found in sharedPrefs both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
+        if (wereLogsEmpty) {
             alDate.clear();
             alHour.clear();
         }
@@ -112,7 +111,7 @@ public class Logs extends AppCompatActivity {
         initialiseData();
 
         // If logs are blank
-        if (isRunForTheFirstTime) {
+        if (wereLogsEmpty) {
             findViewById(R.id.rvLogs).setVisibility(View.GONE);
             findViewById(R.id.twNoLogs).setVisibility(View.VISIBLE);
         }

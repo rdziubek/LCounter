@@ -19,6 +19,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,8 +28,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView twCount;
     private ConstraintLayout clMain;
 
+    private boolean isRunForTheFirstTime = false;
     private int counterValue = 0;
     private boolean helpDialogShown = false;
+    private ArrayList<String> alDate;
+    private ArrayList<String> alHour;
 
     private SharedPreferences timeAndCountPrefs;
     private SharedPreferences settingsPrefs;
@@ -77,28 +82,27 @@ public class MainActivity extends AppCompatActivity {
         return new SimpleDateFormat("HH:mm:ss").format(new Date());
     }
 
-    private void saveCounter() {
+    private String arrayListAsString(ArrayList<String> al) {
+        return android.text.TextUtils.join(",_,", al);
+    }
+
+    private void updateTimeAndCountDataInSharedPrefs() {
+        //counter
         timeAndCountPrefs
                 .edit()
                 .putInt("counterValue", counterValue)
                 .apply();
-    }
 
-    private void appendDateToPrefs(String text) {
+        //date
         timeAndCountPrefs
                 .edit()
-                .putString("alDate", getDateFromPreferences()
-                        + (getDateFromPreferences().equals("") ? "" : ",_,")
-                        + text)
+                .putString("alDate", arrayListAsString(alDate))
                 .apply();
-    }
 
-    private void appendHourToPrefs(String text) {
+        //hour
         timeAndCountPrefs
                 .edit()
-                .putString("alHour", getHourFromPreferences()
-                        + (getHourFromPreferences().equals("") ? "" : ",_,")
-                        + text)
+                .putString("alHour", arrayListAsString(alHour))
                 .apply();
     }
 
@@ -108,29 +112,33 @@ public class MainActivity extends AppCompatActivity {
                 getResources().getColor(R.color.colorPrimary),
                 800);
 
+        //update the data
         counterValue++;
         twCount.setText(String.valueOf(counterValue));
-        saveCounter();
+        alDate.add(getDateTime());
+        alHour.add(getHourTime());
 
-        // save next entry
-        appendDateToPrefs(getDateTime());
-        appendHourToPrefs(getHourTime());
+        //save the updated data permanently
+        updateTimeAndCountDataInSharedPrefs();
     }
 
-    //TODO: implement deleting entries located between of other ones (that is dependent on the passed in delimiter parameter).
-    private String deleteCharsBetweenDelimiters(String str, int startDelimiterIndex) {  //called only if counterVal > 0.
-        //find the chars range
-        int i = 0, charEnd = str.length() - 1;
-//        int charStart = 0, currDelimiterIndex = 0;       //charEnd is initialized to str length to handle the situation where there is no delimiter found (e.g. when there is only one entry saved) (and the " - 1", because of the missing delimiter).
+    // TODO: Convert this into "removeEntryAtIndex(int i)".
+    private void removeLastEntry() {
+        if (counterValue > 0) {
+            //update the data
+            counterValue--;
+            twCount.setText(String.valueOf(counterValue));
+            alDate.remove(alDate.size() - 1);
+            alHour.remove(alHour.size() - 1);
+        }
 
-        if (counterValue + 1 < 2)
-            return "";
-        else
-            while (str.charAt(i) != '-') {
-                charEnd = i;
-                i++;
-            }
-        return str.substring(charEnd + 2);  // +1 because i starts with 0, and another +1 to exclude the delimiter
+        animateBack(
+                getResources().getColor(R.color.colorLivingCoral),
+                getResources().getColor(R.color.colorPrimary),
+                2500);
+
+        //save the updated data permanently
+        updateTimeAndCountDataInSharedPrefs();
     }
 
     private String getDateFromPreferences() {
@@ -143,23 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 .getString("alHour", "");
     }
 
-    private void removeLastEntry() {    // the only modified thing here is the counter, as the actual entry's data (date and hour, specifically) is removed as soon as Logs activity is run
-        if (counterValue > 0) {
-            counterValue--;
-
-            twCount.setText(String.valueOf(counterValue));
-
-            // save modified data
-            saveCounter();
-        }
-
-        animateBack(
-                getResources().getColor(R.color.colorLivingCoral),
-                getResources().getColor(R.color.colorPrimary),
-                2500);
-    }
-
-    private void initialiseData(){
+    private void initialiseData() {
         //init sharedprefs
         timeAndCountPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
@@ -211,14 +203,26 @@ public class MainActivity extends AppCompatActivity {
                 //refresh the view to allow it to auto resize
                 twCount.setText("");
                 twCount.setText(Integer.toString(counterValue));
+
+                //load (restore) the counter history data
+                alDate = new ArrayList<>(Arrays
+                        .asList(getDateFromPreferences()
+                                .split(",_,")));    // will NOT produce null.
+                alHour = new ArrayList<>(Arrays
+                        .asList(getHourFromPreferences()
+                                .split(",_,")));    // will NOT produce null.
+
+                // app-run-first-time indicator
+                if (counterValue == 0)
+                    isRunForTheFirstTime = true;
+
+                // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
+                if (isRunForTheFirstTime) {
+                    alDate.clear();
+                    alHour.clear();
+                }
             }
         });
-
-        //note: it is unnecessary to restore arrays from sharedprefs in MainActivity, since only count (form sharedprefs) is displayed here; new items for the both arrays are assigned DIRECTLY into shared prefs (in a form of "|" separated string), not via an ArrayList.
-        /*        //restore arrays (strings)
-         **        alDate = new ArrayList<>(Arrays.asList(TextUtils.split(timeAndCountPrefs.getString("alDate", ""), "|")));
-         **        alHour = new ArrayList<>(Arrays.asList(TextUtils.split(timeAndCountPrefs.getString("alHour", ""), "|")));
-         */
     }
 
     @Override

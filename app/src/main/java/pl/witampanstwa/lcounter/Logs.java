@@ -57,34 +57,49 @@ public class Logs extends AppCompatActivity {
         timeAndCountPrefs = this.getSharedPreferences(
                 "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
 
-        // initialise AND restore the arrays data
+        // load (restore) the counter history data--can be restored in real-time as it provides the main functionality for this activity
         alDate = new ArrayList<>(Arrays
                 .asList(getDateFromPreferences()
                         .split(",_,")));    // will NOT produce null.
-
         alHour = new ArrayList<>(Arrays
                 .asList(getHourFromPreferences()
                         .split(",_,")));    // will NOT produce null.
 
         counterValue = timeAndCountPrefs.getInt("counterValue", 0);
 
-        // indicate that the app is run for the first time by either checking the date or hour array.
-        if (alHour.get(0).equals(""))
+        // app-run-first-time indicator
+        if (counterValue == 0)
             isRunForTheFirstTime = true;
 
-        // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences (if such was to return null, a "null" string would then get appended to SharedPrefs (and a much more resource heavy solution would be needed)).
+        // if app is run for the first time, both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
         if (isRunForTheFirstTime) {
             alDate.clear();
             alHour.clear();
         }
     }
 
-    private void trimEntries(){
-        if(counterValue != alDate.size())   // doesnt matter whether alDate or alHour is checked as their sizes are always equal
-            while (counterValue < alDate.size()){
-                alDate.remove(alDate.size() - 1);
-                alHour.remove(alDate.size() - 1);
-            }
+    private String arrayListAsString(ArrayList<String> al) {
+        return android.text.TextUtils.join(",_,", al);
+    }
+
+    private void updateTimeAndCountDataInSharedPrefs() {
+        //counter
+        timeAndCountPrefs
+                .edit()
+                .putInt("counterValue", counterValue)
+                .apply();
+
+        //date
+        timeAndCountPrefs
+                .edit()
+                .putString("alDate", arrayListAsString(alDate))
+                .apply();
+
+        //hour
+        timeAndCountPrefs
+                .edit()
+                .putString("alHour", arrayListAsString(alHour))
+                .apply();
     }
 
     @Override
@@ -95,7 +110,6 @@ public class Logs extends AppCompatActivity {
         rvLogs = findViewById(R.id.rvLogs);
 
         initialiseData();
-        trimEntries();
 
         // If logs are blank
         if (isRunForTheFirstTime) {

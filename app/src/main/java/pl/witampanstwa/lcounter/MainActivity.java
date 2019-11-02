@@ -19,22 +19,14 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView twCount;
     private ConstraintLayout clMain;
 
-    private int counterValue = 0;
     private boolean helpDialogShown = false;
-    private ArrayList<String> alDate;
-    private ArrayList<String> alHour;
+    private CountData countData;
 
-    private SharedPreferences counterDataPrefs;
     private SharedPreferences settingsPrefs;
 
     private void showHelpDialog() {
@@ -48,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("dismiss", null)
                 .show()
                 .getButton(AlertDialog.BUTTON_NEGATIVE)
-                .setTextColor(ContextCompat.getColor(this, R.color.colorLivingCoral));
+                .setTextColor(ContextCompat.getColor(MainActivity.this, R.color.colorLivingCoral));
         builder.create();
         helpDialogShown = true;
         //save the dialog state
@@ -73,96 +65,15 @@ public class MainActivity extends AppCompatActivity {
         colorAnimation.start();
     }
 
-    private String getDateTime() {
-        return new SimpleDateFormat("EEE, MMM d, ''yy").format(new Date());
-    }
-
-    private String getHourTime() {
-        //TODO: change 24-hrs to 12-hrs system based on locale
-        return new SimpleDateFormat("HH:mm:ss").format(new Date());
-    }
-
-    private String arrayListAsString(ArrayList<String> al) {
-        return android.text.TextUtils.join(",_,", al);
-    }
-
-    private void updateCounterDataInSharedPrefs() {
-        //counter
-        counterDataPrefs
-                .edit()
-                .putInt("counterValue", counterValue)
-                .apply();
-
-        //date
-        counterDataPrefs
-                .edit()
-                .putString("alDate", arrayListAsString(alDate))
-                .apply();
-
-        //hour
-        counterDataPrefs
-                .edit()
-                .putString("alHour", arrayListAsString(alHour))
-                .apply();
-    }
-
     public void count(View view) {   //R.id.twCount onClick
         animateBack(
-                ContextCompat.getColor(this, R.color.colorWhite),
-                ContextCompat.getColor(this, R.color.colorPrimary),
+                ContextCompat.getColor(MainActivity.this, R.color.colorWhite),
+                ContextCompat.getColor(MainActivity.this, R.color.colorPrimary),
                 800);
 
-        //update the data
-        counterValue++;
-        twCount.setText(String.valueOf(counterValue));
-        alDate.add(getDateTime());
-        alHour.add(getHourTime());
-
-        //save the updated data permanently
-        updateCounterDataInSharedPrefs();
-    }
-
-    // TODO: Convert this into "removeEntryAtIndex(int i)".
-    private void removeLastEntry() {
-        animateBack(
-                ContextCompat.getColor(this, R.color.colorLivingCoral),
-                ContextCompat.getColor(this, R.color.colorPrimary),
-                2500);
-
-        if (counterValue > 0) {
-            //update the data
-            counterValue--;
-            twCount.setText(String.valueOf(counterValue));
-            alDate.remove(alDate.size() - 1);
-            alHour.remove(alHour.size() - 1);
-
-            //save the updated data permanently
-            updateCounterDataInSharedPrefs();
-        }
-    }
-
-    private String getDateFromPreferences() {
-        return counterDataPrefs
-                .getString("alDate", "");
-    }
-
-    private String getHourFromPreferences() {
-        return counterDataPrefs
-                .getString("alHour", "");
-    }
-
-    private void initialiseData() {
-        //init sharedprefs
-        counterDataPrefs = this.getSharedPreferences(
-                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
-        settingsPrefs = this.getSharedPreferences(
-                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
-
-        //restore settings
-        helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);
-
-        //restore counter value
-        counterValue = counterDataPrefs.getInt("counterValue", 0);
+        countData.addEntry();
+        // update UI with updated dataset
+        twCount.setText(String.valueOf(countData.getCounterValue()));
     }
 
     @Override
@@ -174,10 +85,18 @@ public class MainActivity extends AppCompatActivity {
         clMain = findViewById(R.id.clMain);
         twCount = findViewById(R.id.twCount);
 
+        // set up counter data
+        countData = new CountData(MainActivity.this);
+
         twCount.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                removeLastEntry();
+                animateBack(
+                        ContextCompat.getColor(MainActivity.this, R.color.colorLivingCoral),
+                        ContextCompat.getColor(MainActivity.this, R.color.colorPrimary),
+                        2500);
+                countData.removeLastEntry();
+                twCount.setText(String.valueOf(countData.getCounterValue()));
                 return true;
             }
         });
@@ -185,38 +104,30 @@ public class MainActivity extends AppCompatActivity {
         clMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                removeLastEntry();
+                animateBack(
+                        ContextCompat.getColor(MainActivity.this, R.color.colorLivingCoral),
+                        ContextCompat.getColor(MainActivity.this, R.color.colorPrimary),
+                        2500);
+                countData.removeLastEntry();
+                twCount.setText(String.valueOf(countData.getCounterValue()));
                 return true;
             }
         });
 
-        initialiseData();
+        // set up settings
+        settingsPrefs = MainActivity.this.getSharedPreferences(
+                "pl.witampanstwa.lcounter", Context.MODE_PRIVATE);
+        helpDialogShown = settingsPrefs.getBoolean("helpDialogShown", false);
 
         if (!helpDialogShown)
             showHelpDialog();
-
-        twCount.setText(Integer.toString(counterValue));
 
         twCount.post(new Runnable() {   //has to be executed after the layout is fully loaded, since it uses the view's size.
             @Override
             public void run() {
                 //refresh the view to allow it to auto resize
                 twCount.setText("");
-                twCount.setText(Integer.toString(counterValue));
-
-                //load (restore) the counter history data
-                alDate = new ArrayList<>(Arrays
-                        .asList(getDateFromPreferences()
-                                .split(",_,")));    // will NOT produce null.
-                alHour = new ArrayList<>(Arrays
-                        .asList(getHourFromPreferences()
-                                .split(",_,")));    // will NOT produce null.
-
-                // when nothing found in sharedPrefs both arrays contain an empty string returned by get<Date/Hour>FromPreferences.
-                if(alDate.get(0).equals("") || alHour.get(0).equals("")) {
-                    alDate.clear();
-                    alHour.clear();
-                }
+                twCount.setText(Integer.toString(countData.getCounterValue()));
             }
         });
     }
@@ -231,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.menu_item_list:
-                Intent mLogs = new Intent(MainActivity.this, Logs.class);
+                Intent mLogs = new Intent(MainActivity.this, LogsActivity.class);
                 startActivityForResult(mLogs, 0);
                 return true;
 

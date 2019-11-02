@@ -29,7 +29,7 @@
         </activity>
 
         <activity
-            android:name="pl.witampanstwa.lcounter.Logs"
+            android:name="pl.witampanstwa.lcounter.LogsActivity"
             android:screenOrientation="portrait" />
     </application>
 

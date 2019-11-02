@@ -65,13 +65,15 @@ public class CountData {
         updateCounterDataInSharedPrefs();
     }
 
-    // TODO: Convert this into "removeEntryAtIndex(int i)".
-    public void removeLastEntry() {
+    public void removeEntryCountingFromLatest(int index) {
         if (counterValue > 0) {
+            int lastEntryIndex = alDate.size() - 1;
+            int entryToBeRemovedIndex = lastEntryIndex - index;
+
             // update the data
-            counterValue--;
-            alDate.remove(alDate.size() - 1);
-            alHour.remove(alHour.size() - 1);
+            counterValue--;     // only one entry is deleted each call
+            alDate.remove(entryToBeRemovedIndex);
+            alHour.remove(entryToBeRemovedIndex);
 
             // save the updated data permanently
             updateCounterDataInSharedPrefs();

@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         ContextCompat.getColor(MainActivity.this, R.color.colorLivingCoral),
                         ContextCompat.getColor(MainActivity.this, R.color.colorPrimary),
                         2500);
-                countData.removeLastEntry();
+                countData.removeEntryCountingFromLatest(0);
                 twCount.setText(String.valueOf(countData.getCounterValue()));
                 return true;
             }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         ContextCompat.getColor(MainActivity.this, R.color.colorLivingCoral),
                         ContextCompat.getColor(MainActivity.this, R.color.colorPrimary),
                         2500);
-                countData.removeLastEntry();
+                countData.removeEntryCountingFromLatest(0);
                 twCount.setText(String.valueOf(countData.getCounterValue()));
                 return true;
             }
